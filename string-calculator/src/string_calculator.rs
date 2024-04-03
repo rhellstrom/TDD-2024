@@ -10,7 +10,6 @@ impl StringCalculator {
         let mut sum = 0;
         let mut delim = ',';
         
-        //Check if the two first characters are // and if so, set the delimiter to the following char
         if input.starts_with("//"){
             if let Some(new_delim) = input.chars().nth(2) {
                 delim = new_delim;
