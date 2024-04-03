@@ -8,7 +8,16 @@ pub enum CalculatorError {
 impl StringCalculator {
     pub fn add(&self, input: &str) -> Result<i32, CalculatorError> {
         let mut sum = 0;
-        for item in input.split(|c: char| !c.is_numeric() && c != '-') {
+        let mut delim = ',';
+        
+        //Check if the two first characters are // and if so, set the delimiter to the following char
+        if input.starts_with("//"){
+            if let Some(new_delim) = input.chars().nth(2) {
+                delim = new_delim;
+            }
+        }
+            
+        for item in input.split(|c: char| c == delim || c == '\n') {
             if let Ok(number) = item.parse::<i32>(){
                 if number < 0 {
                     return Err(CalculatorError::NegativeNumber(number));
@@ -37,7 +46,7 @@ mod tests {
     #[test]
     fn test_two_number_input() {
         let calculator = StringCalculator;
-        assert_eq!(5, calculator.add("2, 3").unwrap());
+        assert_eq!(5, calculator.add("2,3").unwrap());
     }
     #[test]
     fn test_unknown_number_input() {
@@ -57,7 +66,7 @@ mod tests {
     #[test]
     fn test_negative_number_input() {
         let calculator = StringCalculator;
-        let result = calculator.add("1, -2, 3");
+        let result = calculator.add("1,-2,3");
 
         assert_eq!(result, Err(CalculatorError::NegativeNumber(-2)),
         "Negative number should result in error");
