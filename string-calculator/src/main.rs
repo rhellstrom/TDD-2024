@@ -20,7 +20,7 @@ fn main() -> io::Result<()>{
         }
 
         let result = calculator.add(&buffer);
-        println!("{}", result);
+        println!("{:?}", result);
     }
     println!("Exiting");
     Ok(())
