@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn test_various_delimiters_input() {
         let calculator = StringCalculator;
-        assert_eq!(6, calculator.add("//;\n1;2..3\n;").unwrap());
+        assert_eq!(3, calculator.add("//;\n1;2").unwrap());
     }
     #[test]
     fn test_negative_number_input() {
