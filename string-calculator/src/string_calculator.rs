@@ -34,4 +34,9 @@ mod tests {
         let calculator = StringCalculator;
         assert_eq!(55, calculator.add("1,2,3,4,5,6,7,8,9,10"));
     }
+    #[test]
+    fn test_various_delimiters_input() {
+        let calculator = StringCalculator;
+        assert_eq!(6, calculator.add("//;\n1;2..3\n;"));
+    }
 }
