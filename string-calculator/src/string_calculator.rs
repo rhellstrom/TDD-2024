@@ -29,4 +29,9 @@ mod tests {
         let calculator = StringCalculator;
         assert_eq!(5, calculator.add("2, 3"));
     }
+    #[test]
+    fn test_unknown_number_input() {
+        let calculator = StringCalculator;
+        assert_eq!(55, calculator.add("1,2,3,4,5,6,7,8,9,10"));
+    }
 }
