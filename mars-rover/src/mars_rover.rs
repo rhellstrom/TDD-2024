@@ -1,3 +1,5 @@
+use crate::mars_rover::Movement::{Backward, Forward, Left, Right};
+
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 pub enum Direction{
@@ -35,15 +37,28 @@ impl MarsRover {
             direction,
         }
     }
-    fn move_rover(&mut self, movement: Movement){
-        match movement {
-            Movement::Forward => self.move_forward(),
-            Movement::Backward => self.move_backward(),
-            Movement::Left => self.turn_left(),
-            Movement::Right => self.turn_right(),
+
+    fn command_input(&mut self, commands: &str) {
+        for command in commands.chars() {
+            match command {
+                'F' => self.move_rover(Forward),
+                'B' => self.move_rover(Backward),
+                'L' => self.move_rover(Left),
+                'R' => self.move_rover(Right),
+                _ => {println!("Unrecognized command")}
+            }
         }
     }
-    
+
+    fn move_rover(&mut self, movement: Movement){
+        match movement {
+            Forward => self.move_forward(),
+            Backward => self.move_backward(),
+            Left => self.turn_left(),
+            Right => self.turn_right(),
+        }
+    }
+
     fn move_forward(&mut self) {
         match self.direction {
             Direction::North => self.position.y += 1,
@@ -60,7 +75,7 @@ impl MarsRover {
             Direction::West => self.position.x += 1,
         }
     }
-    
+
     fn turn_left(&mut self) {
         self.direction = match self.direction {
             Direction::North => Direction::West,
@@ -69,7 +84,7 @@ impl MarsRover {
             Direction::East => Direction::North,
         };
     }
-    
+
     fn turn_right(&mut self) {
         self.direction = match self.direction {
             Direction::North => Direction::East,
@@ -85,7 +100,7 @@ mod tests {
     use crate::mars_rover::Direction::*;
     use crate::mars_rover::Movement::*;
     use super::*;
-    
+
     #[test]
     fn test_new_rover() {
         let position = Coordinates { x: 3, y: 5 };
@@ -160,6 +175,25 @@ mod tests {
 
         rover.move_rover(Left);
         assert_eq!(rover.direction, East);
+    }
+    #[test]
+    fn test_several_movement_commands_one() {
+        let start_position = Coordinates { x: 3, y: 5 };
+        let expected_position = Coordinates {x: 4, y: 6 };
+        let mut rover = MarsRover::new(start_position, East);
+        let commands_input = "FFRBLB";
+        rover.command_input(commands_input);
+        assert_eq!(rover.position, expected_position);
+    }
+
+    #[test]
+    fn test_several_movement_commands_two() {
+        let start_position = Coordinates { x: 5, y: 2 };
+        let expected_position = Coordinates {x: 5, y: 2 };
+        let mut rover = MarsRover::new(start_position, West);
+        let commands_input = "FBLLRFB";
+        rover.command_input(commands_input);
+        assert_eq!(rover.position, expected_position);
     }
 
 }
