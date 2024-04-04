@@ -39,8 +39,8 @@ impl MarsRover {
         match movement {
             Movement::Forward => self.move_forward(),
             Movement::Backward => self.move_backward(),
-            Movement::Left => {}
-            Movement::Right => {}
+            Movement::Left => self.turn_left(),
+            Movement::Right => self.turn_right(),
         }
     }
     
@@ -59,6 +59,24 @@ impl MarsRover {
             Direction::East => self.position.x -= 1,
             Direction::West => self.position.x += 1,
         }
+    }
+    
+    fn turn_left(&mut self) {
+        self.direction = match self.direction {
+            Direction::North => Direction::West,
+            Direction::West => Direction::South,
+            Direction::South => Direction::East,
+            Direction::East => Direction::North,
+        };
+    }
+    
+    fn turn_right(&mut self) {
+        self.direction = match self.direction {
+            Direction::North => Direction::East,
+            Direction::East => Direction::South,
+            Direction::South => Direction::West,
+            Direction::West => Direction::North,
+        };
     }
 }
 
