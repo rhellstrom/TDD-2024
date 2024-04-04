@@ -1,4 +1,5 @@
-use crate::mars_rover::Movement::{Backward, Forward, Left, Right};
+use crate::mars_rover::Movement::*;
+use crate::mars_rover::Direction::*;
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
@@ -45,7 +46,7 @@ impl MarsRover {
                 'B' => self.move_rover(Backward),
                 'L' => self.move_rover(Left),
                 'R' => self.move_rover(Right),
-                _ => {println!("Unrecognized command")}
+                _ => println!("Unrecognized command"),
             }
         }
     }
@@ -61,43 +62,42 @@ impl MarsRover {
 
     fn move_forward(&mut self) {
         match self.direction {
-            Direction::North => self.position.y += 1,
-            Direction::South => self.position.y -= 1,
-            Direction::East => self.position.x += 1,
-            Direction::West => self.position.x -= 1,
+            North => self.position.y += 1,
+            South => self.position.y -= 1,
+            East => self.position.x += 1,
+            West => self.position.x -= 1,
         }
     }
     fn move_backward(&mut self) {
         match self.direction {
-            Direction::North => self.position.y -= 1,
-            Direction::South => self.position.y += 1,
-            Direction::East => self.position.x -= 1,
-            Direction::West => self.position.x += 1,
+            North => self.position.y -= 1,
+            South => self.position.y += 1,
+            East => self.position.x -= 1,
+            West => self.position.x += 1,
         }
     }
 
     fn turn_left(&mut self) {
         self.direction = match self.direction {
-            Direction::North => Direction::West,
-            Direction::West => Direction::South,
-            Direction::South => Direction::East,
-            Direction::East => Direction::North,
+            North => West,
+            West => South,
+            South => East,
+            East => North,
         };
     }
 
     fn turn_right(&mut self) {
         self.direction = match self.direction {
-            Direction::North => Direction::East,
-            Direction::East => Direction::South,
-            Direction::South => Direction::West,
-            Direction::West => Direction::North,
+            North => East,
+            East => South,
+            South => West,
+            West => North,
         };
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::mars_rover::Direction::*;
     use crate::mars_rover::Movement::*;
     use super::*;
 
