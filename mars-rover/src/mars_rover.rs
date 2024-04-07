@@ -63,8 +63,23 @@ impl MarsRover {
 
     fn move_forward(&mut self) {
         match self.direction {
-            North => self.position.y = if self.position.y == self.grid_size { 1 } else { self.position.y + 1 },
-            South => self.position.y = if self.position.y == 1 { self.grid_size } else { self.position.y - 1 },
+            North => {
+                // If y is at 1 we'd have to adjust x to mimic crossing the northern pole
+                if self.position.y == 1 {
+                    self.position.x = (self.position.x + self.grid_size / 2) % self.grid_size + 1
+                } else {
+                    self.position.y += 1
+                }
+            },
+            South => {
+                //If we're at the southern pole
+                if self.position.y == self.grid_size {
+                    self.position.x = (self.position.x + self.grid_size / 2) % self.grid_size
+                } else {
+                    self.position.y -= 1
+                }
+            }
+
             East => self.position.x = if self.position.x == self.grid_size { 1 } else { self.position.x + 1 },
             West => self.position.x = if self.position.x == 1 { self.grid_size } else { self.position.x - 1 },
         }
@@ -104,14 +119,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_new_rover() {
+    fn new_rover() {
         let position = Coordinates { x: 3, y: 5 };
         let rover = MarsRover::new(position, East, 6);
         assert_eq!(rover.direction, East);
         assert_eq!(rover.position, position);
     }
     #[test]
-    fn test_move_rover_forward_from_south() {
+    fn move_rover_forward_from_south() {
         let start_position = Coordinates { x: 3, y: 5 };
         let expected_position = Coordinates { x: 3, y: 4 };
         let mut rover = MarsRover::new(start_position, South, 6);
@@ -120,7 +135,7 @@ mod tests {
         assert_eq!(rover.position, expected_position);
     }
     #[test]
-    fn test_move_rover_backward_from_east() {
+    fn move_rover_backward_from_east() {
         let start_position = Coordinates { x: 3, y: 5 };
         let expected_position = Coordinates { x: 2, y: 5 };
         let mut rover = MarsRover::new(start_position, East, 6);
@@ -129,7 +144,7 @@ mod tests {
         assert_eq!(rover.position, expected_position);
     }
     #[test]
-    fn test_move_rover_forward_from_north() {
+    fn move_rover_forward_from_north() {
         let start_position = Coordinates { x: 3, y: 5 };
         let expected_position = Coordinates { x: 3, y: 6 };
         let mut rover = MarsRover::new(start_position, North, 6);
@@ -138,7 +153,7 @@ mod tests {
         assert_eq!(rover.position, expected_position);
     }
     #[test]
-    fn test_move_rover_backward_from_west() {
+    fn move_rover_backward_from_west() {
         let start_position = Coordinates { x: 3, y: 5 };
         let expected_position = Coordinates { x: 4, y: 5 };
         let mut rover = MarsRover::new(start_position, West, 6);
@@ -147,7 +162,7 @@ mod tests {
         assert_eq!(rover.position, expected_position);
     }
     #[test]
-    fn test_turn_rover_right_from_north() {
+    fn turn_rover_right_from_north() {
         let start_position = Coordinates { x: 3, y: 5 };
         let mut rover = MarsRover::new(start_position, North, 6);
 
@@ -155,7 +170,7 @@ mod tests {
         assert_eq!(rover.direction, East);
     }
     #[test]
-    fn test_turn_rover_left_from_north() {
+    fn turn_rover_left_from_north() {
         let start_position = Coordinates { x: 3, y: 5 };
         let mut rover = MarsRover::new(start_position, North, 6);
 
@@ -163,7 +178,7 @@ mod tests {
         assert_eq!(rover.direction, West);
     }
     #[test]
-    fn test_turn_rover_right_from_west() {
+    fn turn_rover_right_from_west() {
         let start_position = Coordinates { x: 3, y: 5 };
         let mut rover = MarsRover::new(start_position, West, 6);
 
@@ -171,7 +186,7 @@ mod tests {
         assert_eq!(rover.direction, North);
     }
     #[test]
-    fn test_turn_rover_left_from_south() {
+    fn turn_rover_left_from_south() {
         let start_position = Coordinates { x: 3, y: 5 };
         let mut rover = MarsRover::new(start_position, South, 6);
 
@@ -179,7 +194,7 @@ mod tests {
         assert_eq!(rover.direction, East);
     }
     #[test]
-    fn test_several_movement_commands_one() {
+    fn several_movement_commands_one() {
         let start_position = Coordinates { x: 3, y: 5 };
         let expected_position = Coordinates {x: 4, y: 6 };
         let mut rover = MarsRover::new(start_position, East, 6);
@@ -189,7 +204,7 @@ mod tests {
     }
 
     #[test]
-    fn test_several_movement_commands_two() {
+    fn several_movement_commands_two() {
         let start_position = Coordinates { x: 5, y: 2 };
         let expected_position = Coordinates {x: 5, y: 2 };
         let mut rover = MarsRover::new(start_position, West, 6);
@@ -199,29 +214,29 @@ mod tests {
     }
 
     #[test]
-    fn test_wrapping_around_the_edges_one() {
-        let start_position = Coordinates { x: 3, y: 1 };
-        let expected_position = Coordinates {x: 3, y: 6 };
-        let mut rover = MarsRover::new(start_position, South, 6);
+    fn wrapping_around_the_north_pole_forward() {
+        let start_position = Coordinates { x: 8, y: 1 };
+        let expected_position = Coordinates {x: 5, y: 1 };
+        let mut rover = MarsRover::new(start_position, North, 8);
         rover.move_rover(Forward);
         assert_eq!(rover.position, expected_position);
     }
 
     #[test]
-    fn test_wrapping_around_the_edges_two() {
-        let start_position = Coordinates { x: 1, y: 1 };
+    fn wrapping_around_the_north_pole_forward_two() {
+        let start_position = Coordinates { x: 7, y: 1 };
         let expected_position = Coordinates {x: 4, y: 1 };
-        let mut rover = MarsRover::new(start_position, West, 4);
+        let mut rover = MarsRover::new(start_position, North, 8);
         rover.move_rover(Forward);
         assert_eq!(rover.position, expected_position);
     }
-    
+
     #[test]
-    fn test_wrapping_around_the_edges_three() {
-        let start_position = Coordinates { x: 4, y: 4 };
-        let expected_position = Coordinates {x: 1, y: 4 };
-        let mut rover = MarsRover::new(start_position, West, 4);
-        rover.move_rover(Backward);
+    fn wrapping_around_the_south_pole_forward() {
+        let start_position = Coordinates { x: 1, y: 8 };
+        let expected_position = Coordinates {x: 5, y: 8 };
+        let mut rover = MarsRover::new(start_position, South, 8);
+        rover.move_rover(Forward);
         assert_eq!(rover.position, expected_position);
     }
 }
