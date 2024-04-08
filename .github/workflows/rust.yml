@@ -16,9 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-#    - name: Navigate to string-calculator
-#      run: cd TDD-2024/string-calculator
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --manifest-path string-calculator/Cargo.toml --verbose
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --manifest-path string-calculator/Cargo.toml --verbose
