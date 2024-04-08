@@ -59,37 +59,37 @@ mod tests {
     #[test]
     fn test_empty_string_returns_zero() {
         let calculator = setup_calculator();
-        assert_eq!(0, calculator.add("").unwrap());
+        assert_eq!(Ok(0), calculator.add(""));
     }
     
     #[test]
     fn test_one_number_input() {
         let calculator = setup_calculator();
-        assert_eq!(44, calculator.add("44").unwrap());
+        assert_eq!(Ok(44), calculator.add("44"));
     }
     
     #[test]
     fn test_two_number_input() {
         let calculator = setup_calculator();
-        assert_eq!(5, calculator.add("2,3").unwrap());
+        assert_eq!(Ok(5), calculator.add("2,3"));
     }
     
     #[test]
     fn test_unknown_number_input() {
         let calculator = setup_calculator();
-        assert_eq!(55, calculator.add("1,2,3,4,5,6,7,8,9,10").unwrap());
+        assert_eq!(Ok(55), calculator.add("1,2,3,4,5,6,7,8,9,10"));
     }
     
     #[test]
     fn test_handle_newlines_input() {
         let calculator = setup_calculator();
-        assert_eq!(6, calculator.add("1\n2,3").unwrap());
+        assert_eq!(Ok(6), calculator.add("1\n2,3"));
     }
     
     #[test]
     fn test_various_delimiters_input() {
         let calculator = setup_calculator();
-        assert_eq!(3, calculator.add("//;\n1;2").unwrap());
+        assert_eq!(Ok(3), calculator.add("//;\n1;2"));
     }
     
     #[test]
