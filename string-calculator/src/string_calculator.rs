@@ -1,6 +1,5 @@
 use mockall::automock;
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 pub enum CalculatorError {
     NegativeNumber(i32),
@@ -56,42 +55,78 @@ mod tests {
         let mock_logger = MockLogger::new();
         StringCalculator::new(mock_logger)
     }
-    
+
     #[test]
     fn test_empty_string_returns_zero() {
         let calculator = setup_calculator();
         assert_eq!(0, calculator.add("").unwrap());
     }
+    
     #[test]
     fn test_one_number_input() {
         let calculator = setup_calculator();
         assert_eq!(44, calculator.add("44").unwrap());
     }
+    
     #[test]
     fn test_two_number_input() {
         let calculator = setup_calculator();
         assert_eq!(5, calculator.add("2,3").unwrap());
     }
+    
     #[test]
     fn test_unknown_number_input() {
         let calculator = setup_calculator();
         assert_eq!(55, calculator.add("1,2,3,4,5,6,7,8,9,10").unwrap());
     }
+    
     #[test]
     fn test_handle_newlines_input() {
         let calculator = setup_calculator();
         assert_eq!(6, calculator.add("1\n2,3").unwrap());
     }
+    
     #[test]
     fn test_various_delimiters_input() {
         let calculator = setup_calculator();
         assert_eq!(3, calculator.add("//;\n1;2").unwrap());
     }
+    
     #[test]
     fn test_negative_number_input() {
         let calculator = setup_calculator();
         let result = calculator.add("1,-2,3");
         assert_eq!(result, Err(CalculatorError::NegativeNumber(-2)),
         "Negative number should result in error");
+    }
+    
+    #[test]
+    fn test_string_calculator_does_not_log_numbers_below1001() {
+        let mut mock_logger = MockLogger::new();
+        mock_logger.expect_log()
+            .times(0)
+            .return_const(());
+        let calculator = StringCalculator::new(mock_logger);
+        let _result = calculator.add("1000,200,5");
+    }
+    
+    #[test]
+    fn test_string_calculator_does_log_number_greater_than1000() {
+        let mut mock_logger = MockLogger::new();
+        mock_logger.expect_log()
+            .times(1)
+            .return_const(());
+        let calculator = StringCalculator::new(mock_logger);
+        let _result = calculator.add("1234,200,5");
+    }
+    
+    #[test]
+    fn test_string_calculator_does_log_numbers_greater_than1000() {
+        let mut mock_logger = MockLogger::new();
+        mock_logger.expect_log()
+            .times(2)
+            .return_const(());
+        let calculator = StringCalculator::new(mock_logger);
+        let _result = calculator.add("1234,5678,69");
     }
 }
