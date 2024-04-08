@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Navigate to string-calculator
-      run: cd string-calculator
+      run: cd TDD-2024/string-calculator
     - name: Build
       run: cargo build --verbose
     - name: Run tests
