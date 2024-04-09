@@ -1,0 +1,6 @@
+Welcome to string calculator!
+
+USAGE: scalc '1,2,3' to return the total of the delimiter separated values
+
+In order to specify the delimiter you start the number input with //[delimiter]
+USAGE: scalc '//[***][%%%]1***2%%%4' to set your own delimiter.
