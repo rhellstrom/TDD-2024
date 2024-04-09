@@ -4,11 +4,13 @@ use std::fs;
 
 type TestResult = Result<(), Box<dyn Error>>;
 
+const NAME: &str = "string-calculator";
+
 fn run_stdin(input_file: &str, expected_file: &str) -> TestResult {
     let input = fs::read_to_string(input_file)?;
     let expected = fs::read_to_string(expected_file)?;
 
-    Command::cargo_bin("string-calculator")?
+    Command::cargo_bin(NAME)?
         .write_stdin(input)
         .assert()
         .success()
@@ -18,28 +20,28 @@ fn run_stdin(input_file: &str, expected_file: &str) -> TestResult {
 
 #[test]
 fn welcome_instructions() -> TestResult {
-    let welcome = "tests/inputs/empty.txt";
-    let output = "tests/expected/welcome.txt";
-    run_stdin(welcome, output)
+    let input = "tests/inputs/empty.txt";
+    let expected = "tests/expected/welcome.txt";
+    run_stdin(input, expected)
 }
 
 #[test]
 fn one_line1() -> TestResult {
     let welcome = "tests/inputs/one_line_1.txt";
-    let output = "tests/expected/one_line_1.txt";
-    run_stdin(welcome, output)
+    let expected = "tests/expected/one_line_1.txt";
+    run_stdin(welcome, expected)
 }
 
 #[test]
 fn one_line_complex() -> TestResult {
-    let welcome = "tests/inputs/one_line_complex.txt";
-    let output = "tests/expected/one_line_complex.txt";
-    run_stdin(welcome, output)
+    let input = "tests/inputs/one_line_complex.txt";
+    let expected = "tests/expected/one_line_complex.txt";
+    run_stdin(input, expected)
 }
 
 #[test]
 fn multiple_newline_separated() -> TestResult {
-    let welcome = "tests/inputs/one_line_complex.txt";
-    let output = "tests/expected/one_line_complex.txt";
-    run_stdin(welcome, output)
+    let input = "tests/inputs/one_line_complex.txt";
+    let expected = "tests/expected/one_line_complex.txt";
+    run_stdin(input, expected)
 }
