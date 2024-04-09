@@ -41,7 +41,7 @@ fn one_line_complex() -> TestResult {
 
 #[test]
 fn multiple_newline_separated() -> TestResult {
-    let input = "tests/inputs/one_line_complex.txt";
-    let expected = "tests/expected/one_line_complex.txt";
+    let input = "tests/inputs/multiple_lines.txt";
+    let expected = "tests/expected/multiple_lines.txt";
     run_stdin(input, expected)
 }
