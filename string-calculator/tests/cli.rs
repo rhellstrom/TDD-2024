@@ -27,8 +27,8 @@ fn welcome_instructions() -> TestResult {
 
 #[test]
 fn one_line1() -> TestResult {
-    let welcome = "tests/inputs/one_line_1.txt";
-    let expected = "tests/expected/one_line_1.txt";
+    let welcome = "tests/inputs/one_line.txt";
+    let expected = "tests/expected/one_line.txt";
     run_stdin(welcome, expected)
 }
 
