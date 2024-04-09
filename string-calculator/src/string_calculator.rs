@@ -44,12 +44,14 @@ impl<L: Logger> StringCalculator<L> {
         }
     }
     
+    // Filth
     fn add(&self, input: &str) -> Result<i32, CalculatorError> {
         let mut sum = 0;
         let mut delimiters: Vec<String> = vec![",".to_string(), "\n".to_string()];
         let mut input_string = input;
         
-        if input.starts_with("//") {
+        // Check if we have any custom delimiters to take care of
+        if input_string.starts_with("//") {
             if let Some(new_delim) = input_string.chars().nth(2) {
                 if new_delim == '[' {
                     let re = regex::Regex::new(r"\[(.*?)]").unwrap();
@@ -66,8 +68,8 @@ impl<L: Logger> StringCalculator<L> {
             input_string = &input_string[index..];
         }
         
+        // Chop the input string to pieces with our delimiters
         let mut split_input = vec![input_string];
-        
         for delimiter in delimiters {
             let mut new_split_input: Vec<&str> = vec![];
             for part in &split_input {
@@ -76,6 +78,7 @@ impl<L: Logger> StringCalculator<L> {
             split_input = new_split_input;
         }
         
+        // Parse numbers 
         for item in split_input {
             if let Ok(number) = item.parse::<i32>() {
                 if number < 0 {
