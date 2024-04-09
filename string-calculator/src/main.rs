@@ -1,15 +1,21 @@
 use std::io;
+use crate::string_calculator::{Logger, StringCalculator};
 
 mod string_calculator;
 
-fn main() -> io::Result<()>{
-    greeter_text();
-    Ok(())
+pub struct StubLogger;
+
+impl Logger for StubLogger {
+    fn log(&self, number: i32){
+        println!("Logged number {}", number);
+    }
 }
 
-fn greeter_text() {
-    println!("Welcome to string calculator!\n");
-    println!("USAGE: scalc '1,2,3' to return the total of the delimiter separated values\n");
-    println!("In order to specify the delimiter you start the number input with //[delimiter]");
-    println!("USAGE: scalc '//[***][%%%]1***2%%%4' to set your own delimiter.");
+fn main() -> io::Result<()>{
+    let logger = StubLogger;
+    if let Err(e) = StringCalculator::new(logger).run(){
+        eprintln!("{}", e);
+        std::process::exit(1);
+    }
+    Ok(())
 }

@@ -1,4 +1,8 @@
+use std::error::Error;
+use std::io;
 use mockall::automock;
+
+type MyResult<T> = Result<T, Box<dyn Error>>;
 
 #[derive(Debug, PartialEq)]
 pub enum CalculatorError {
@@ -14,7 +18,6 @@ pub struct StringCalculator<L: Logger> {
     logger: L,
 }
 
-#[allow(dead_code)]
 impl<L: Logger> StringCalculator<L> {
     pub fn new(logger: L) -> Self {
         Self {
@@ -22,22 +25,63 @@ impl<L: Logger> StringCalculator<L> {
         }
     }
 
-    fn add(&self, input: &str) -> Result<i32, CalculatorError> {
-        let mut sum = 0;
-        let mut delim = ',';
-
-        if input.starts_with("//") {
-            if let Some(new_delim) = input.chars().nth(2) {
-                delim = new_delim;
+    pub fn run(&self) -> MyResult<()>{
+        greeter_text();
+        let mut buffer = String::new();
+        loop {
+            buffer.clear();
+            io::stdin().read_line(&mut buffer)?;
+            let trimmed_input = buffer.trim();
+            
+            if trimmed_input.is_empty(){
+                return Ok(())
+            }
+            
+            let input = &trimmed_input[6..].trim().trim_matches('\'');
+            if let Ok(result) = self.add(input){
+                println!("The result is {}", result);
             }
         }
-
-        for item in input.split(|c: char| c == delim || c == '\n') {
+    }
+    
+    fn add(&self, input: &str) -> Result<i32, CalculatorError> {
+        let mut sum = 0;
+        let mut delimiters: Vec<String> = vec![",".to_string(), "\n".to_string()];
+        let mut input_string = input;
+        
+        if input.starts_with("//") {
+            if let Some(new_delim) = input_string.chars().nth(2) {
+                if new_delim == '[' {
+                    let re = regex::Regex::new(r"\[(.*?)]").unwrap();
+                    for cap in re.captures_iter(input) {
+                        if let Some(substring) = cap.get(1) {
+                            delimiters.push(substring.as_str().to_string());
+                        }
+                    }
+                } else {
+                    delimiters.push(new_delim.to_string())
+                }
+            }
+            let index = input_string.chars().position(|c| c.is_ascii_digit()).unwrap();
+            input_string = &input_string[index..];
+        }
+        
+        let mut split_input = vec![input_string];
+        
+        for delimiter in delimiters {
+            let mut new_split_input: Vec<&str> = vec![];
+            for part in &split_input {
+                new_split_input.extend(part.split(&delimiter));
+            }
+            split_input = new_split_input;
+        }
+        
+        for item in split_input {
             if let Ok(number) = item.parse::<i32>() {
                 if number < 0 {
                     return Err(CalculatorError::NegativeNumber(number));
                 }
-
+        
                 if number > 1000 {
                     self.logger.log(number);
                 }
@@ -46,6 +90,13 @@ impl<L: Logger> StringCalculator<L> {
         }
         Ok(sum)
     }
+}
+
+fn greeter_text() {
+    println!("Welcome to string calculator!\n");
+    println!("USAGE: scalc '1,2,3' to return the total of the delimiter separated values\n");
+    println!("In order to specify the delimiter you start the number input with //[delimiter]");
+    println!("USAGE: scalc '//[***][%%%]1***2%%%4' to set your own delimiter.");
 }
 
 #[cfg(test)]
