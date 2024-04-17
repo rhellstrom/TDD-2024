@@ -1,7 +1,7 @@
 use crate::board::Square;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]     
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]     
 pub enum PieceType {
     Pawn,
     Rook,
@@ -12,7 +12,7 @@ pub enum PieceType {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Color {
     Black,
     White,
