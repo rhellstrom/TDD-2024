@@ -4,10 +4,16 @@ use crate::chess_piece::PieceType::*;
 const BOARD_SIZE: usize = 8;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Square {
     pub x: usize,
     pub y: usize,
+}
+
+impl Square { 
+    pub fn algebraic_to_coords(algebraic: &str) -> Square {
+        unimplemented!()
+    }    
 }
 
 #[allow(dead_code)]
@@ -148,7 +154,6 @@ mod tests {
     #[test]
     fn initialized_rooks() {
         let chessboard = Chessboard::new_with_pieces();
-
         assert_piece_at_square(&chessboard, Square { x: 0, y: 0 }, PieceType::Rook, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 7, y: 0 }, PieceType::Rook, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 0, y: 7 }, PieceType::Rook, Color::White);
@@ -158,7 +163,6 @@ mod tests {
     #[test]
     fn initialized_knights() {
         let chessboard = Chessboard::new_with_pieces();
-
         assert_piece_at_square(&chessboard, Square { x: 1, y: 0 }, PieceType::Knight, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 6, y: 0 }, PieceType::Knight, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 1, y: 7 }, PieceType::Knight, Color::White);
@@ -168,7 +172,6 @@ mod tests {
     #[test]
     fn initialized_bishops() {
         let chessboard = Chessboard::new_with_pieces();
-
         assert_piece_at_square(&chessboard, Square { x: 2, y: 0 }, PieceType::Bishop, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 5, y: 0 }, PieceType::Bishop, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 2, y: 7 }, PieceType::Bishop, Color::White);
@@ -178,7 +181,6 @@ mod tests {
     #[test]
     fn initialized_kings() {
         let chessboard = Chessboard::new_with_pieces();
-
         assert_piece_at_square(&chessboard, Square { x: 4, y: 0 }, PieceType::King, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 4, y: 7 }, PieceType::King, Color::White);
     }
@@ -186,9 +188,20 @@ mod tests {
     #[test]
     fn initialized_queens() {
         let chessboard = Chessboard::new_with_pieces();
-
         assert_piece_at_square(&chessboard, Square { x: 3, y: 0 }, PieceType::Queen, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 3, y: 7 }, PieceType::Queen, Color::White);
+    }
+    
+    #[test]
+    fn algebraic_to_coordinates() {
+        let a1_square = Square { x: 0, y: 7 };
+        let f3_square = Square { x: 5, y: 5 };
+        let a8_square = Square { x: 0, y: 0 };
+        let g8_square = Square { x: 6, y: 0 };
+        assert_eq!(Square::algebraic_to_coords("a1"), a1_square);
+        assert_eq!(Square::algebraic_to_coords("f3"), f3_square);
+        assert_eq!(Square::algebraic_to_coords("a8"), a8_square);
+        assert_eq!(Square::algebraic_to_coords("g8"), g8_square);
     }
 }
 
