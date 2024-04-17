@@ -1,12 +1,13 @@
-use crate::chess_piece::{Color, Piece};
+use crate::chess_piece::{Color, Piece, PieceType};
+use crate::chess_piece::PieceType::*;
 
 const BOARD_SIZE: usize = 8;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub struct Square {
-    pub(crate) x: usize,
-    pub(crate) y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 #[allow(dead_code)]
@@ -20,6 +21,11 @@ impl Chessboard {
         Chessboard{
             board: [[None; BOARD_SIZE]; BOARD_SIZE],
         }
+    }
+    pub fn new_with_pieces() -> Chessboard {
+        let mut board = Chessboard::new();
+        board.initialize_pieces();
+        board
     }
 
     pub fn get_piece_at(&self, square: Square) -> Option<Piece> {
@@ -68,5 +74,38 @@ impl Chessboard {
             }
         }
         println!("{}",result);
+    }
+    
+    fn initialize_pieces(&mut self) {
+        self.with_mirrored_piece(Pawn, &[0, 1, 2, 3, 4, 5, 6, 7], 1);
+        self.with_mirrored_piece(Rook, &[0, 7], 0);
+        self.with_mirrored_piece(Knight, &[1, 6], 0);
+        self.with_mirrored_piece(Bishop, &[2, 5], 0);
+        self.with_mirrored_piece(Queen, &[3], 0);
+        self.with_mirrored_piece(King, &[4], 0);
+    }
+    
+    fn with_mirrored_piece(
+        &mut self, 
+        piece_type: PieceType, 
+        x_coordinates: &[usize], 
+        y_coordinate: usize) {
+        for &x in x_coordinates {
+            let black_piece = Piece {
+                piece_type,
+                color: Color::Black,
+                location: Square { x, y: y_coordinate },
+            };
+            let white_piece = Piece {
+                piece_type,
+                color: Color::White,
+                location: Square {
+                    x,
+                    y: BOARD_SIZE - 1 - y_coordinate,
+                },
+            };
+            self.add_piece(black_piece);
+            self.add_piece(white_piece);
+        }
     }
 }
