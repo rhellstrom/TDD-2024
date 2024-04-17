@@ -12,7 +12,7 @@ pub struct Square {
 
 #[allow(dead_code)]
 pub struct Chessboard {
-    board: [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE],
+    pub board: [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE],
 }
 
 #[allow(dead_code)]
@@ -109,3 +109,95 @@ impl Chessboard {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::board::{Chessboard, Square};
+    use crate::chess_piece::{Color, PieceType};
+
+    fn assert_piece_at_square(chessboard: &Chessboard, square: Square, piece_type: PieceType, color: Color) {
+        if let Some(piece) = chessboard.get_piece_at(square) {
+            assert_eq!(piece.piece_type, piece_type);
+            assert_eq!(piece.color, color);
+        } else {
+            panic!("Piece not found at square {:?}", square);
+        }
+    }
+    
+    #[test]
+    fn initialized_pawns() {
+        let board = Chessboard::new_with_pieces();
+        for index in 0..7 {
+            let white_pawn_square = Square {x: index, y: 6};
+            let black_pawn_square = Square {x: index, y: 1};
+
+            if let Some(white_pawn) = board.get_piece_at(white_pawn_square){
+                assert_eq!(white_pawn.color, Color::White)
+            } else {
+                panic!("No piece present at {:?}", white_pawn_square);
+            }
+
+            if let Some(black_pawn) = board.get_piece_at(black_pawn_square){
+                assert_eq!(black_pawn.color,Color::Black)
+            } else {
+                panic!("No piece present at {:?}", black_pawn_square);
+            }
+        }
+    }
+    
+    #[test]
+    fn initialized_rooks() {
+        let chessboard = Chessboard::new_with_pieces();
+
+        assert_piece_at_square(&chessboard, Square { x: 0, y: 0 }, PieceType::Rook, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 7, y: 0 }, PieceType::Rook, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 0, y: 7 }, PieceType::Rook, Color::White);
+        assert_piece_at_square(&chessboard, Square { x: 7, y: 7 }, PieceType::Rook, Color::White);
+    }
+
+    #[test]
+    fn initialized_knights() {
+        let chessboard = Chessboard::new_with_pieces();
+
+        assert_piece_at_square(&chessboard, Square { x: 1, y: 0 }, PieceType::Knight, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 6, y: 0 }, PieceType::Knight, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 1, y: 7 }, PieceType::Knight, Color::White);
+        assert_piece_at_square(&chessboard, Square { x: 6, y: 7 }, PieceType::Knight, Color::White);
+    }
+
+    #[test]
+    fn initialized_bishops() {
+        let chessboard = Chessboard::new_with_pieces();
+
+        assert_piece_at_square(&chessboard, Square { x: 2, y: 0 }, PieceType::Bishop, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 5, y: 0 }, PieceType::Bishop, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 2, y: 7 }, PieceType::Bishop, Color::White);
+        assert_piece_at_square(&chessboard, Square { x: 5, y: 7 }, PieceType::Bishop, Color::White);
+    }
+
+    #[test]
+    fn initialized_kings() {
+        let chessboard = Chessboard::new_with_pieces();
+
+        assert_piece_at_square(&chessboard, Square { x: 4, y: 0 }, PieceType::King, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 4, y: 7 }, PieceType::King, Color::White);
+    }
+
+    #[test]
+    fn initialized_queens() {
+        let chessboard = Chessboard::new_with_pieces();
+
+        assert_piece_at_square(&chessboard, Square { x: 3, y: 0 }, PieceType::Queen, Color::Black);
+        assert_piece_at_square(&chessboard, Square { x: 3, y: 7 }, PieceType::Queen, Color::White);
+    }
+}
+
+
+
+
+
+
+
+
+
+
