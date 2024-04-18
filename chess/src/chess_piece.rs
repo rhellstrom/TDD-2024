@@ -28,7 +28,7 @@ pub struct Piece {
 
 impl Piece {
     /// Initializes a new piece with its square given as a string in algebraic notation e.g "e2"
-    fn new(piece_type: PieceType, color: Color, square: &str) -> Result<Piece, &str> {
+    pub fn new(piece_type: PieceType, color: Color, square: &str) -> Result<Piece, &str> {
         match Square::algebraic_to_coords(square) {
             Ok(location) => {
                 Ok(Piece {
@@ -75,20 +75,3 @@ impl PieceMovement for PieceType {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::board::{Chessboard, Square};
-    use crate::chess_piece::Color::White;
-    use crate::chess_piece::Piece;
-    use crate::chess_piece::PieceType::Pawn;
-
-    #[test]
-    fn moving_pawns_backward() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, White, "e2").unwrap();
-        board.add_piece(pawn);
-        
-        let destination_square = Square::algebraic_to_coords("e1").unwrap();
-        assert!(!pawn.can_move(destination_square));
-    }
-}
