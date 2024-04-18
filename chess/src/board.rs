@@ -10,10 +10,27 @@ pub struct Square {
     pub y: usize,
 }
 
-impl Square { 
-    pub fn algebraic_to_coords(algebraic: &str) -> Square {
-        unimplemented!()
-    }    
+impl Square {
+    pub fn as_algebraic(algebraic: &str) -> Result<Self, &str> {
+        if let Some(letter) = algebraic.chars().nth(0) {
+            if let Some(number_char) = algebraic.chars().nth(1) {
+                if !letter.is_ascii_alphabetic() || !('a'..='h').contains(&letter) {
+                    return Err("Not a valid letter");
+                }
+
+                let number = match number_char.to_digit(10) {
+                    Some(n) if (1..=8).contains(&n) => n as usize,
+                    _ => return Err("Not a valid number"),
+                };
+
+                let x = (letter as usize) - ('a' as usize);
+                let y = 8 - number;
+
+                return Ok(Self { x, y });
+            }
+        }
+        Err("Not valid input")
+    }
 }
 
 #[allow(dead_code)]
@@ -129,7 +146,7 @@ mod tests {
             panic!("Piece not found at square {:?}", square);
         }
     }
-    
+
     #[test]
     fn initialized_pawns() {
         let board = Chessboard::new_with_pieces();
@@ -150,7 +167,7 @@ mod tests {
             }
         }
     }
-    
+
     #[test]
     fn initialized_rooks() {
         let chessboard = Chessboard::new_with_pieces();
@@ -191,18 +208,27 @@ mod tests {
         assert_piece_at_square(&chessboard, Square { x: 3, y: 0 }, PieceType::Queen, Color::Black);
         assert_piece_at_square(&chessboard, Square { x: 3, y: 7 }, PieceType::Queen, Color::White);
     }
-    
+
     #[test]
     fn algebraic_to_coordinates() {
         let a1_square = Square { x: 0, y: 7 };
         let f3_square = Square { x: 5, y: 5 };
         let a8_square = Square { x: 0, y: 0 };
         let g8_square = Square { x: 6, y: 0 };
-        assert_eq!(Square::algebraic_to_coords("a1"), a1_square);
-        assert_eq!(Square::algebraic_to_coords("f3"), f3_square);
-        assert_eq!(Square::algebraic_to_coords("a8"), a8_square);
-        assert_eq!(Square::algebraic_to_coords("g8"), g8_square);
+        assert_eq!(Square::as_algebraic("a1"), Ok(a1_square));
+        assert_eq!(Square::as_algebraic("f3"), Ok(f3_square));
+        assert_eq!(Square::as_algebraic("a8"), Ok(a8_square));
+        assert_eq!(Square::as_algebraic("g8"), Ok(g8_square));
     }
+    
+    #[test]
+    fn bad_algebraic_formatting() {
+        assert_eq!(Square::as_algebraic("A1"), Err("Not a valid letter"));
+        assert_eq!(Square::as_algebraic("I1"), Err("Not a valid letter"));
+        assert_eq!(Square::as_algebraic("a0"), Err("Not a valid number"));
+        assert_eq!(Square::as_algebraic("a9"), Err("Not a valid number"));
+    }
+    
 }
 
 
