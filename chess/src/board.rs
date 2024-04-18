@@ -11,7 +11,7 @@ pub struct Square {
 }
 
 impl Square {
-    pub fn as_algebraic(algebraic: &str) -> Result<Self, &str> {
+    pub fn algebraic_to_coords(algebraic: &str) -> Result<Self, &str> {
         if let Some(letter) = algebraic.chars().nth(0) {
             if let Some(number_char) = algebraic.chars().nth(1) {
                 if !letter.is_ascii_alphabetic() || !('a'..='h').contains(&letter) {
@@ -215,18 +215,18 @@ mod tests {
         let f3_square = Square { x: 5, y: 5 };
         let a8_square = Square { x: 0, y: 0 };
         let g8_square = Square { x: 6, y: 0 };
-        assert_eq!(Square::as_algebraic("a1"), Ok(a1_square));
-        assert_eq!(Square::as_algebraic("f3"), Ok(f3_square));
-        assert_eq!(Square::as_algebraic("a8"), Ok(a8_square));
-        assert_eq!(Square::as_algebraic("g8"), Ok(g8_square));
+        assert_eq!(Square::algebraic_to_coords("a1"), Ok(a1_square));
+        assert_eq!(Square::algebraic_to_coords("f3"), Ok(f3_square));
+        assert_eq!(Square::algebraic_to_coords("a8"), Ok(a8_square));
+        assert_eq!(Square::algebraic_to_coords("g8"), Ok(g8_square));
     }
     
     #[test]
     fn bad_algebraic_formatting() {
-        assert_eq!(Square::as_algebraic("A1"), Err("Not a valid letter"));
-        assert_eq!(Square::as_algebraic("I1"), Err("Not a valid letter"));
-        assert_eq!(Square::as_algebraic("a0"), Err("Not a valid number"));
-        assert_eq!(Square::as_algebraic("a9"), Err("Not a valid number"));
+        assert_eq!(Square::algebraic_to_coords("A1"), Err("Not a valid letter"));
+        assert_eq!(Square::algebraic_to_coords("I1"), Err("Not a valid letter"));
+        assert_eq!(Square::algebraic_to_coords("a0"), Err("Not a valid number"));
+        assert_eq!(Square::algebraic_to_coords("a9"), Err("Not a valid number"));
     }
     
 }
