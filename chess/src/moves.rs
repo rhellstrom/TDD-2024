@@ -1,8 +1,7 @@
 use crate::board::{Chessboard, Square};
 use crate::chess_piece::Color::{Black, White};
-use crate::chess_piece::Piece;
+use crate::chess_piece::{Color, Piece};
 #[allow(dead_code)]
-/// Returns a vector of possible moves for that piece on the board 
 fn pawn_movements(board: Chessboard, piece: Piece) -> Vec<Square>{
     let row= piece.location.y;
     let col = piece.location.x;
@@ -60,48 +59,26 @@ fn pawn_movements(board: Chessboard, piece: Piece) -> Vec<Square>{
 
 #[allow(dead_code)]
 fn rook_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
-    let mut possible_moves: Vec<Square> = vec![];
-    let row = piece.location.y;
-    let col = piece.location.x;
+    let mut possible_moves: Vec<Square>= vec![];
+    for (r, c) in &[(1,0), (-1, 0), (0, 1), (0, -1)] {
+        let mut row = piece.location.y as i8 + r;
+        let mut col = piece.location.x as i8 + c;
 
-    for x in (col + 1)..8 {
-        if let Some(occupied_pos) = board.board[row][x] {
-            if occupied_pos.color != piece.color {
-                possible_moves.push(Square { y: row, x });
+        while (0..8).contains(&(row as usize)) && (0..8).contains(&(col as usize)) {
+            let location = board.board[row as usize][col as usize];
+            if location.is_none() {
+                possible_moves.push(Square { y: row as usize, x: col as usize });
+            } else {
+                if let Some(obstacle_piece) = location {
+                    if obstacle_piece.color != piece.color {
+                        possible_moves.push(obstacle_piece.location);
+                    }
+                }
+                break; 
             }
-            break;
+            row += r;
+            col += c;
         }
-        possible_moves.push(Square { y: row, x });
-    }
-
-    for x in (0..col).rev() {
-        if let Some(occupied_pos) = board.board[row][x] {
-            if occupied_pos.color != piece.color {
-                possible_moves.push(Square { y: row, x });
-            }
-            break;
-        }
-        possible_moves.push(Square { y: row, x });
-    }
-
-    for y in (0..row).rev() {
-        if let Some(occupied_pos) = board.board[y][col] {
-            if occupied_pos.color != piece.color {
-                possible_moves.push(Square { y, x: col });
-            }
-            break;
-        }
-        possible_moves.push(Square { y, x: col });
-    }
-
-    for y in (row + 1)..8 {
-        if let Some(occupied_pos) = board.board[y][col] {
-            if occupied_pos.color != piece.color {
-                possible_moves.push(Square { y, x: col });
-            }
-            break;
-        }
-        possible_moves.push(Square { y, x: col });
     }
     possible_moves
 }
