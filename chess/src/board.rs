@@ -1,7 +1,9 @@
 use crate::chess_piece::{Color, Piece, PieceType};
+use crate::chess_piece::Color::{Black, White};
 use crate::chess_piece::PieceType::*;
 
 const BOARD_SIZE: usize = 8;
+const INITIAL_BOARD_FEN: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -46,10 +48,51 @@ impl Chessboard {
         }
     }
     pub fn new_with_pieces() -> Chessboard {
-        let mut board = Chessboard::new();
-        board.initialize_pieces();
+        let board = Chessboard::from_fen(INITIAL_BOARD_FEN).unwrap();
         board
     }
+
+    /// VERY simple FEN parsing function for initializing pieces on board.
+    /// Does not support active color, en passant, castling, Half/full move
+    pub fn from_fen(fen: &str) -> Result<Chessboard, &str>{
+        let mut board = Chessboard::new();
+        let mut row = 0; 
+        let mut col = 0;
+
+        for c in fen.chars() {
+            match c {
+                '/' => {
+                    row += 1;
+                    col = 0; 
+                }
+                '1'..='8' => {
+                    col += c.to_digit(10).unwrap() as usize;
+                }
+                _ => {
+                    let color = if c.is_lowercase() { Black } else { White };
+                    let piece_type = match c.to_ascii_lowercase() {
+                        'p' => Pawn,
+                        'n' => Knight,
+                        'b' => Bishop,
+                        'r' => Rook,
+                        'q' => Queen,
+                        'k' => King,
+                        _ => return Err("Invalid piece"), 
+                    };
+
+                    let piece = Piece {
+                        piece_type,
+                        color,
+                        location: Square { y: row, x: col},
+                    };
+                    board.add_piece(piece);
+                    col += 1; 
+                }
+            }
+        }
+        Ok(board)
+    }
+
 
     pub fn get_piece_at(&self, square: Square) -> Option<Piece> {
         self.board[square.y][square.x]
@@ -72,12 +115,12 @@ impl Chessboard {
                 match self.get_piece_at(Square { x, y }) {
                     Some(piece) => {
                         let symbol = match piece.color {
-                            Color::Black => piece.piece_type.get_symbol(),
-                            Color::White => piece.piece_type.get_symbol(),
+                            Black => piece.piece_type.get_symbol(),
+                            White => piece.piece_type.get_symbol(),
                         };
                         let color = match piece.color {
-                            Color::Black => {'B'}
-                            Color::White => {'W'}
+                            Black => {'B'}
+                            White => {'W'}
                         };
                         result.push_str(&format!("{}-{}", color, symbol));
                     }
@@ -97,39 +140,6 @@ impl Chessboard {
             }
         }
         println!("{}",result);
-    }
-    
-    fn initialize_pieces(&mut self) {
-        self.with_mirrored_piece(Pawn, &[0, 1, 2, 3, 4, 5, 6, 7], 1);
-        self.with_mirrored_piece(Rook, &[0, 7], 0);
-        self.with_mirrored_piece(Knight, &[1, 6], 0);
-        self.with_mirrored_piece(Bishop, &[2, 5], 0);
-        self.with_mirrored_piece(Queen, &[3], 0);
-        self.with_mirrored_piece(King, &[4], 0);
-    }
-    
-    fn with_mirrored_piece(
-        &mut self, 
-        piece_type: PieceType, 
-        x_coordinates: &[usize], 
-        y_coordinate: usize) {
-        for &x in x_coordinates {
-            let black_piece = Piece {
-                piece_type,
-                color: Color::Black,
-                location: Square { x, y: y_coordinate },
-            };
-            let white_piece = Piece {
-                piece_type,
-                color: Color::White,
-                location: Square {
-                    x,
-                    y: BOARD_SIZE - 1 - y_coordinate,
-                },
-            };
-            self.add_piece(black_piece);
-            self.add_piece(white_piece);
-        }
     }
 }
 
