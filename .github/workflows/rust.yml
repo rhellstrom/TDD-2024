@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "chess" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "chess" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --manifest-path string-calculator/Cargo.toml --verbose
+      run: cargo build --manifest-path chess/Cargo.toml --verbose
     - name: Run tests
-      run: cargo test --manifest-path string-calculator/Cargo.toml --verbose
+      run: cargo test --manifest-path chess/Cargo.toml --verbose
