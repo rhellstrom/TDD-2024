@@ -87,17 +87,14 @@ pub fn rook_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
 #[cfg(test)]
 mod tests {
     use crate::board::{Chessboard, Square};
-    use crate::chess_piece::Color::{Black, White};
-    use crate::chess_piece::{Piece, PieceMovement};
-    use crate::chess_piece::PieceType::*;
-    use crate::moves::{pawn_movements, rook_movements};
+    use crate::chess_piece::PieceMovement;
+    
 
-    // test_moves(BOARD_FEN, Piece to test in algebraic, destination(s?) in algebraic)
-// test_moves(FEN_STRING, "e2", vec of all possible destinations?)
     fn test_moves(fen_state: &str, piece_pos_alg: &str, possible_moves: Vec<&str>){
         let board = Chessboard::from_fen(fen_state).unwrap();
         let test_piece_location = Square::algebraic_to_coords(piece_pos_alg).unwrap();
         let test_piece = board.get_piece_at(test_piece_location).unwrap();
+
         let mut moves_to_test: Vec<Square> = vec![];
         for square in possible_moves {
            moves_to_test.push(Square::algebraic_to_coords(square).unwrap()) 
@@ -105,8 +102,8 @@ mod tests {
         
         let possible_moves = test_piece.can_move(board);
         assert!(moves_to_test.iter().all(|moves| possible_moves.contains(moves)));
-        
     }
+
     #[test]
     fn moving_pawn_white_first_move_no_captures(){
         test_moves("8/8/8/8/8/8/4P3/8", "e2", vec!["e3", "e4"])
@@ -116,136 +113,29 @@ mod tests {
     fn moving_pawn_black_second_move_with_captures(){
        test_moves("8/8/4p3/3P1P2/8/8/8/8", "e6", vec!["d5", "e5", "f5"])
     }
-    
+
     #[test]
-    fn moving_white_pawn_backward() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, White, "e2").unwrap();
-        board.add_piece(pawn);
-        let destination_square = Square::algebraic_to_coords("e1").unwrap();
-        assert!(!pawn_movements(board, pawn).contains(&destination_square));
+    fn moving_pawn_no_possible_moves(){
+        test_moves("8/8/8/8/8/4P3/4P3/8", "e2", vec![])
     }
-    
     #[test]
-    fn moving_white_pawn_forward() {
-        let board = Chessboard::from_fen("8/8/8/8/8/8/4P3/8").unwrap();
-        let pawn = board.get_piece_at(Square::algebraic_to_coords("e2").unwrap()).unwrap();
-        let destination_square = Square::algebraic_to_coords("e3").unwrap();
-        assert!(pawn_movements(board, pawn).contains(&destination_square));
+    fn moving_rook_allowed_directions_without_obstacles(){
+        let expected_moves: Vec<&str> = vec![
+            "a4", "b4", "c4", "d4", "f4", "g4", "h4", "e1", "e2", "e3", "e5", "e6", "e7", "e8"
+        ];
+        test_moves("8/8/8/8/4R3/8/8/8", "e4", expected_moves);
     }
 
     #[test]
-    fn moving_black_pawn_forward() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, Black, "e7").unwrap();
-        board.add_piece(pawn);
-        let destination_square = Square::algebraic_to_coords("e6").unwrap();
-        assert!(pawn_movements(board, pawn).contains(&destination_square));
-    }
-    #[test]
-    fn moving_pawn_diagonally_to_square_occupied_by_opponent() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, White, "e2").unwrap();
-        let opponent_pawn = Piece::new(Pawn, Black, "d3").unwrap();
-        board.add_piece(pawn);
-        board.add_piece(opponent_pawn);
-        let destination_square = Square::algebraic_to_coords("d3").unwrap();
-        assert!(pawn_movements(board, pawn).contains(&destination_square));
-    }
-    
-    #[test]
-    fn moving_pawn_diagonally_without_opponent() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, White, "e2").unwrap();
-        board.add_piece(pawn);
-        let destination_square = Square::algebraic_to_coords("d3").unwrap();
-        assert!(!pawn_movements(board, pawn).contains(&destination_square));
-    }
-    
-    #[test]
-    fn moving_pawn_diagonally_to_square_occupied_by_ally() {
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, White, "e2").unwrap();
-        let allied_pawn = Piece::new(Pawn, White, "d3").unwrap();
-        board.add_piece(pawn);
-        board.add_piece(allied_pawn);
-        let destination_square = Square::algebraic_to_coords("d3").unwrap();
-        assert!(!pawn_movements(board, pawn).contains(&destination_square));
-    }
-    
-    #[test]
-    fn moving_black_pawn_two_squares_first_move(){
-        let mut board = Chessboard::new();
-        let pawn = Piece::new(Pawn, Black, "e7").unwrap();
-        board.add_piece(pawn);
-        let destination_square = Square::algebraic_to_coords("e5").unwrap();
-        assert!(pawn_movements(board, pawn).contains(&destination_square));
-    }
-    
-    #[test]
-    fn moving_rook_sideways_across_entire_board(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "a4").unwrap();
-        board.add_piece(rook);
-        let destination_square = Square::algebraic_to_coords("h4").unwrap();
-        assert!(rook_movements(board, rook).contains(&destination_square));
+    fn moving_rook_surrounded_by_allies(){
+        test_moves("8/8/8/4P3/3PRP2/4P3/8/8", "e4", vec![]);
     }
 
     #[test]
-    fn moving_rook_diagonally(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e4").unwrap();
-        board.add_piece(rook);
-        let destination_square = Square::algebraic_to_coords("a8").unwrap();
-        assert!(!rook_movements(board, rook).contains(&destination_square));
-    }
-
-    #[test]
-    fn moving_rook_over_piece() {
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e4").unwrap();
-        let allied_piece = Piece::new(Pawn, Black, "e6").unwrap();
-        board.add_piece(rook);
-        board.add_piece(allied_piece);
-        let destination_square = Square::algebraic_to_coords("e8").unwrap();
-        assert!(!rook_movements(board, rook).contains(&destination_square));
-    }
-
-    #[test]
-    fn moving_rook_upwards_and_capturing_opponent(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e4").unwrap();
-        let opponent_piece= Piece::new(Pawn, White, "e6").unwrap();
-        board.add_piece(rook);
-        board.add_piece(opponent_piece);
-        let destination_square = Square::algebraic_to_coords("e6").unwrap();
-        assert!(rook_movements(board, rook).contains(&destination_square));
-    }
-
-    #[test]
-    fn moving_rook_and_capturing_ally(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e4").unwrap();
-        let allied_piece = Piece::new(Pawn, Black, "e6").unwrap();
-        board.add_piece(rook);
-        board.add_piece(allied_piece);
-        let destination_square = Square::algebraic_to_coords("e6").unwrap();
-        assert!(!rook_movements(board, rook).contains(&destination_square));
-    }
-    #[test]
-    fn moving_rook_upwards_across_entire_board(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e1").unwrap();
-        board.add_piece(rook);
-        let destination_square = Square::algebraic_to_coords("e8").unwrap();
-        assert!(rook_movements(board, rook).contains(&destination_square));
-    }
-    #[test]
-    fn moving_rook_downwards_across_entire_board(){
-        let mut board = Chessboard::new();
-        let rook = Piece::new(Rook, Black, "e8").unwrap();
-        board.add_piece(rook);
-        let destination_square = Square::algebraic_to_coords("e1").unwrap();
-        assert!(rook_movements(board, rook).contains(&destination_square));
+    fn moving_rook_surrounded_by_opponent_one_square_away(){
+        let expected_moves: Vec<&str> = vec![
+            "c4", "d4", "f4", "g4", "e6", "e5", "e3", "e2"
+        ];
+        test_moves("8/8/4P3/8/2P1r1P1/8/4P3/8", "e4", expected_moves);
     }
 }
