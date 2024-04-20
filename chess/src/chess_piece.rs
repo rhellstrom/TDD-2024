@@ -1,4 +1,6 @@
-use crate::board::Square;
+use crate::board::{Chessboard, Square};
+use crate::chess_piece::Color::{Black, White};
+use crate::moves::{pawn_movements, rook_movements};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]     
@@ -26,6 +28,12 @@ pub struct Piece {
     pub location: Square,
 }
 
+impl Color {
+    pub fn opposites(self, other_piece: Color) -> bool {
+        matches!((self, other_piece), (Black, White) | (White, Black))
+    }
+}
+
 impl Piece {
     /// Initializes a new piece with its square given as a string in algebraic notation e.g "e2"
     pub fn new(piece_type: PieceType, color: Color, square: &str) -> Result<Piece, &str> {
@@ -37,16 +45,26 @@ impl Piece {
                     location,
                 })
             }
-                Err(e) => Err(e) //TODO: Handle me
+                Err(e) => Err(e) 
             }
         }
-    fn can_move(&self, destination: Square) -> bool {
-        self.piece_type.can_move(self.location, destination)
+}
+
+impl PieceMovement for Piece {
+    fn can_move(&self, board: Chessboard) -> Vec<Square>{
+        match self.piece_type {
+            PieceType::Pawn => pawn_movements(board, *self),
+            PieceType::Rook => rook_movements(board, *self),
+            PieceType::Knight => {unimplemented!()}
+            PieceType::Bishop => {unimplemented!()}
+            PieceType::Queen => {unimplemented!()}
+            PieceType::King => {unimplemented!()}
+        }
     }
 }
 
-trait PieceMovement {
-    fn can_move(&self, from: Square, to: Square) -> bool;
+pub trait PieceMovement {
+    fn can_move(&self, board: Chessboard) -> Vec<Square>;
 }
 
 impl PieceType {
@@ -62,16 +80,4 @@ impl PieceType {
     }
 }
 
-impl PieceMovement for PieceType {
-    fn can_move(&self, _from: Square, _to: Square) -> bool {
-        match *self {
-            PieceType::Pawn => {unimplemented!()}
-            PieceType::Rook => {unimplemented!()}
-            PieceType::Knight => {unimplemented!()}
-            PieceType::Bishop => {unimplemented!()}
-            PieceType::Queen => {unimplemented!()}
-            PieceType::King => {unimplemented!()}
-        }
-    }
-}
 

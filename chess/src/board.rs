@@ -1,5 +1,5 @@
-use crate::chess_piece::{Color, Piece, PieceType};
-use crate::chess_piece::Color::{Black, White};
+use crate::chess_piece::Color::*;
+use crate::chess_piece::Piece;
 use crate::chess_piece::PieceType::*;
 
 const BOARD_SIZE: usize = 8;
@@ -12,6 +12,7 @@ pub struct Square {
     pub y: usize,
 }
 
+#[allow(dead_code)]
 impl Square {
     pub fn algebraic_to_coords(algebraic: &str) -> Result<Self, &str> {
         if let Some(letter) = algebraic.chars().nth(0) {
