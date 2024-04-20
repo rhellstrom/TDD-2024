@@ -89,7 +89,6 @@ mod tests {
     use crate::board::{Chessboard, Square};
     use crate::chess_piece::PieceMovement;
     
-
     fn test_moves(fen_state: &str, piece_pos_alg: &str, possible_moves: Vec<&str>){
         let board = Chessboard::from_fen(fen_state).unwrap();
         let test_piece_location = Square::algebraic_to_coords(piece_pos_alg).unwrap();
@@ -132,10 +131,95 @@ mod tests {
     }
 
     #[test]
-    fn moving_rook_surrounded_by_opponent_one_square_away(){
+    fn moving_rook_surrounded_by_captures_one_square_away(){
         let expected_moves: Vec<&str> = vec![
             "c4", "d4", "f4", "g4", "e6", "e5", "e3", "e2"
         ];
         test_moves("8/8/4P3/8/2P1r1P1/8/4P3/8", "e4", expected_moves);
     }
+
+    #[test]
+    fn moving_knight_without_obstacles(){
+        let expected_moves: Vec<&str> = vec![
+            "c5", "c3", "d6", "d2", "f6", "f2", "g5", "g3"
+        ];
+        test_moves("8/8/8/8/4N3/8/8/8", "e4", expected_moves);
+    }
+
+    #[test]
+    fn moving_knight_without_possible_moves(){
+        test_moves("8/8/3P1P2/2P3P1/4N3/2P3P1/3P1P2/8", "e4", vec![]);
+    }
+
+    #[test]
+    fn moving_knight_with_captures_everywhere(){
+        let expected_moves: Vec<&str> = vec![
+            "c5", "c3", "d6", "d2", "f6", "f2", "g5", "g3"
+        ];
+        test_moves("8/8/3P1P2/2P3P1/4n3/2P3P1/3P1P2/8", "e4", expected_moves);
+    }
+
+    #[test]
+    fn moving_bishop_allowed_directions_without_obstacles(){
+        let expected_moves: Vec<&str> = vec![
+            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g3", "h7", "d3", "c2", "b1"
+        ];
+        test_moves("8/8/8/8/4B3/8/8/8", "e4", expected_moves);
+    }
+    #[test]
+    fn moving_bishop_surrounded_by_allies(){
+        test_moves("8/8/8/3P1P2/4B3/3P1P2/8/8", "e4", vec![]);
+    }
+    #[test]
+    fn moving_bishop_surrounded_by_captures_two_square_away(){
+        let expected_moves: Vec<&str> = vec![
+            "c6", "d5", "f5", "g6", "f3", "g2", "d3", "c2"
+        ];
+        test_moves("8/8/2P3P1/8/4b3/8/2P3P1/8", "e4", expected_moves);
+    }
+
+    #[test]
+    fn moving_queen_all_possible_directions_empty_board(){
+        let expected_moves: Vec<&str> = vec![
+            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g3", "h7", "d3", "c2", "b1",
+            "a4", "b4", "c4", "d4", "f4", "g4", "h4", "e1", "e2", "e3", "e5", "e6", "e7", "e8"
+        ];
+        test_moves("8/8/8/8/4Q3/8/8/8", "e4", expected_moves);
+    }
+
+    #[test]
+    fn moving_queen_surrounded_by_allies(){
+        test_moves("8/8/8/3PPP2/3PQP2/3PPP2/8/8", "e4", vec![]);
+    }
+
+    #[test]
+    fn moving_queen_surrounded_by_captures_two_squares_away_all_directions(){
+        let expected_moves: Vec<&str> = vec![
+            "c6", "e6", "g6", "d5", "e5", "f5", "c4", "d4", "f4", "g4",
+            "d3", "e3", "f3", "c2", "e2", "g2"
+        ];
+        test_moves("8/8/2P1P1P1/8/2P1q1P1/8/2P1P1P1/8", "e4", expected_moves);
+    }
+
+    #[test]
+    fn moving_king_all_possible_directions_without_obstacles(){
+        let expected_moves: Vec<&str> = vec![
+            "d5", "e5", "f5", "d4", "f4", "d3", "e3", "f3"
+        ];
+        test_moves("8/8/8/8/4K3/8/8/8", "e4", expected_moves);
+    }
+    
+    #[test]
+    fn moving_king_surrounded_by_allies(){
+        test_moves("8/8/8/3PPP2/3PKP2/3PPP2/8/8", "e4", vec![]);
+    }
+    
+    #[test]
+    fn moving_king_surrounded_by_captures(){
+        let expected_moves: Vec<&str> = vec![
+            "d5", "e5", "f5", "d4", "f4", "d3", "e3", "f3"
+        ];
+        test_moves("8/8/8/3PPP2/3PkP2/3PPP2/8/8", "e4", expected_moves);
+    }
+
 }
