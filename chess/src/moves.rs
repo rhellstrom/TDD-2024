@@ -2,7 +2,6 @@ use crate::board::{Chessboard, Square};
 use crate::chess_piece::Color::{Black, White};
 use crate::chess_piece::Piece;
 
-#[allow(dead_code)]
 pub fn pawn_movements(board: Chessboard, piece: Piece) -> Vec<Square>{
     let row= piece.location.y;
     let col = piece.location.x;
@@ -62,7 +61,6 @@ pub fn pawn_movements(board: Chessboard, piece: Piece) -> Vec<Square>{
     possible_moves
 }
 
-#[allow(dead_code)]
 pub fn rook_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     let mut possible_moves: Vec<Square>= vec![];
     for (r, c) in &[(1,0), (-1, 0), (0, 1), (0, -1)] {
@@ -111,8 +109,7 @@ pub fn bishop_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
 }
 
 pub fn queen_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
-    let mut possible_moves: Vec<Square> = vec![];
-    possible_moves = rook_movements(board, piece);
+    let mut possible_moves = rook_movements(board, piece);
     possible_moves.append(&mut bishop_movements(board, piece));
     possible_moves
 }
@@ -151,29 +148,35 @@ pub fn knight_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     possible_moves
 }
 
-pub fn king_movements(chessboard: Chessboard, piece: Piece) -> Vec<Square> {
-    
-    vec![]
+pub fn king_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
+    let mut possible_moves: Vec<Square> = vec![];
+    let row = piece.location.y;
+    let col = piece.location.x;
+    for i in 0..3 {
+        let row = row + i - 1;
+        for j in 0..3 {
+            let col = col + j - 1;
+            if(0..8).contains(&{ row }) && (0..8).contains(&{ col }) {
+                let location = board.board[row][col];
+                if location.is_none(){
+                    possible_moves.push(Square { y: row, x: col})
+                }
+                if let Some(obstacle_piece) = location {
+                    if obstacle_piece.color != piece.color{
+                        possible_moves.push(obstacle_piece.location)
+                    }
+                }
+            } 
+        }
+    }
+    possible_moves
 }
+
 #[cfg(test)]
 mod tests {
     use crate::board::{Chessboard, Square};
     use crate::chess_piece::PieceMovement;
     
-    fn test_moves(fen_state: &str, piece_pos_alg: &str, possible_moves: Vec<&str>){
-        let board = Chessboard::from_fen(fen_state).unwrap();
-        let test_piece_location = Square::algebraic_to_coords(piece_pos_alg).unwrap();
-        let test_piece = board.get_piece_at(test_piece_location).unwrap();
-
-        let mut moves_to_test: Vec<Square> = vec![];
-        for square in possible_moves {
-           moves_to_test.push(Square::algebraic_to_coords(square).unwrap()) 
-        }
-        
-        let possible_moves = test_piece.can_move(board);
-        assert!(moves_to_test.iter().all(|moves| possible_moves.contains(moves)));
-    }
-
     #[test]
     fn moving_pawn_within_bounds(){
         test_moves("4P3/8/8/8/8/8/8/8", "e8", vec![]);
@@ -307,4 +310,17 @@ mod tests {
         test_moves("8/8/8/8/8/8/8/7K", "h1", vec!["g1", "g2", "h2"])
     }
 
+    fn test_moves(fen_state: &str, piece_pos_alg: &str, possible_moves: Vec<&str>){
+        let board = Chessboard::from_fen(fen_state).unwrap();
+        let test_piece_location = Square::algebraic_to_coords(piece_pos_alg).unwrap();
+        let test_piece = board.get_piece_at(test_piece_location).unwrap();
+
+        let mut moves_to_test: Vec<Square> = vec![];
+        for square in possible_moves {
+            moves_to_test.push(Square::algebraic_to_coords(square).unwrap())
+        }
+
+        let possible_moves = test_piece.can_move(board);
+        assert!(moves_to_test.iter().all(|moves| possible_moves.contains(moves)));
+    }
 }

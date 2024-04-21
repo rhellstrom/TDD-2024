@@ -5,7 +5,6 @@ use crate::chess_piece::PieceType::*;
 const BOARD_SIZE: usize = 8;
 const INITIAL_BOARD_FEN: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Square {
     pub x: usize,

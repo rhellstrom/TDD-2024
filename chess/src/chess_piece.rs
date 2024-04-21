@@ -1,8 +1,6 @@
 use crate::board::{Chessboard, Square};
-use crate::chess_piece::Color::{Black, White};
-use crate::moves::{bishop_movements, knight_movements, pawn_movements, queen_movements, rook_movements};
+use crate::moves::{bishop_movements, king_movements, knight_movements, pawn_movements, queen_movements, rook_movements};
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]     
 pub enum PieceType {
     Pawn,
@@ -13,41 +11,17 @@ pub enum PieceType {
     King,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Color {
     Black,
     White,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub struct Piece {
     pub piece_type: PieceType,
     pub color: Color,
     pub location: Square,
-}
-
-impl Color {
-    pub fn opposites(self, other_piece: Color) -> bool {
-        matches!((self, other_piece), (Black, White) | (White, Black))
-    }
-}
-
-impl Piece {
-    /// Initializes a new piece with its square given as a string in algebraic notation e.g "e2"
-    pub fn new(piece_type: PieceType, color: Color, square: &str) -> Result<Piece, &str> {
-        match Square::algebraic_to_coords(square) {
-            Ok(location) => {
-                Ok(Piece {
-                    piece_type,
-                    color,
-                    location,
-                })
-            }
-                Err(e) => Err(e) 
-            }
-        }
 }
 
 impl PieceMovement for Piece {
@@ -58,7 +32,7 @@ impl PieceMovement for Piece {
             PieceType::Knight => knight_movements(board, *self), 
             PieceType::Bishop => bishop_movements(board, *self), 
             PieceType::Queen => queen_movements(board, *self),
-            PieceType::King => {unimplemented!()}
+            PieceType::King => king_movements(board, *self),
         }
     }
 }
