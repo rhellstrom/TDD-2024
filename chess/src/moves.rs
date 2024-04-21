@@ -84,6 +84,28 @@ pub fn rook_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     possible_moves
 }
 
+pub fn bishop_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
+    let mut possible_moves: Vec<Square> = vec![];
+    for (r, c) in &[(1, -1), (1, 1), (-1, 1), (-1, -1)] {
+        let mut row = piece.location.y as i8 + r;
+        let mut col = piece.location.x as i8 + c;
+
+        while (0..8).contains(&(row as usize)) && (0..8).contains(&(col as usize)) {
+            let location = board.board[row as usize][col as usize];
+            if location.is_none(){ 
+                possible_moves.push(Square { y: row as usize, x: col as usize});
+            } else if let Some(obstacle_piece) = location {
+                if obstacle_piece.color != piece.color {
+                    possible_moves.push(obstacle_piece.location);
+                }
+            }
+            row += r;
+            col += c;
+        }
+    }
+    possible_moves
+}
+
 pub fn knight_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     //All possible movement combinations for the knight
     let knight_moves: [(i8, i8); 8] = [
@@ -205,7 +227,7 @@ mod tests {
     #[test]
     fn moving_bishop_allowed_directions_without_obstacles(){
         let expected_moves: Vec<&str> = vec![
-            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g3", "h7", "d3", "c2", "b1"
+            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g6", "h7", "d3", "c2", "b1"
         ];
         test_moves("8/8/8/8/4B3/8/8/8", "e4", expected_moves);
     }

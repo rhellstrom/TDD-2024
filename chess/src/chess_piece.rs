@@ -1,6 +1,6 @@
 use crate::board::{Chessboard, Square};
 use crate::chess_piece::Color::{Black, White};
-use crate::moves::{knight_movements, pawn_movements, rook_movements};
+use crate::moves::{bishop_movements, knight_movements, pawn_movements, rook_movements};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]     
@@ -56,7 +56,7 @@ impl PieceMovement for Piece {
             PieceType::Pawn => pawn_movements(board, *self),
             PieceType::Rook => rook_movements(board, *self),
             PieceType::Knight => knight_movements(board, *self), 
-            PieceType::Bishop => {unimplemented!()}
+            PieceType::Bishop => bishop_movements(board, *self), 
             PieceType::Queen => {unimplemented!()}
             PieceType::King => {unimplemented!()}
         }
