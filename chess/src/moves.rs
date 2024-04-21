@@ -136,6 +136,10 @@ mod tests {
     }
 
     #[test]
+    fn moving_pawn_within_bounds(){
+        test_moves("4P3/8/8/8/8/8/8/8", "e8", vec![]);
+    }
+    #[test]
     fn moving_pawn_white_first_move_no_captures(){
         test_moves("8/8/8/8/8/8/4P3/8", "e2", vec!["e3", "e4"])
     }
@@ -257,6 +261,11 @@ mod tests {
             "d5", "e5", "f5", "d4", "f4", "d3", "e3", "f3"
         ];
         test_moves("8/8/8/3PPP2/3PkP2/3PPP2/8/8", "e4", expected_moves);
+    }
+    
+    #[test]
+    fn moving_king_within_bounds(){
+        test_moves("8/8/8/8/8/8/8/7K", "h1", vec!["g1", "g2", "h2"])
     }
 
 }
