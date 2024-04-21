@@ -6,52 +6,56 @@ use crate::chess_piece::Piece;
 pub fn pawn_movements(board: Chessboard, piece: Piece) -> Vec<Square>{
     let row= piece.location.y;
     let col = piece.location.x;
-    let mut possible_moves: Vec<Square> = vec![]; 
-    match piece.color{
-        Black => {
-            let right_capture = board.board[row + 1][col + 1];
-            let left_capture= board.board[row + 1][col - 1];
-            let forward_once = board.board[row + 1][col];
-            let forward_twice = board.board[row + 2][col];
-            
-            if let Some(right_cap) = right_capture{
-                if right_cap.color == White {
-                    possible_moves.push(right_cap.location);
-                }
-            }
-            if let Some(left_cap) = left_capture {
-                if left_cap.color == White {
-                    possible_moves.push(left_cap.location);
-                }
-            }
-            if forward_once.is_none(){
-                possible_moves.push(Square {y: row + 1, x: col});
-            }
-            if forward_twice.is_none() && piece.location.y == 1 {
-                possible_moves.push( Square { y: row + 2, x: col});
-            }
-        }
-        White => {
-            let left_capture = board.board[row - 1][col -1];
-            let right_capture = board.board[row - 1][col + 1];
-            let forward_once = board.board[row - 1][col];
-            let forward_twice = board.board[row - 2][col];
-            if let Some(left_cap) = left_capture {
-                if left_cap.color == Black {
-                    possible_moves.push(left_cap.location);
-                }
-            }
-            if let Some(right_cap) = right_capture {
-                if right_cap.color == Black {
-                    possible_moves.push(right_cap.location);
-                }
-            }
-            if forward_once.is_none() {
-                possible_moves.push(Square { y: row - 1, x: col});
-            }
+    let mut possible_moves: Vec<Square> = vec![];
+    // Awkward out of bonds check...
+    if(0..8).contains(&(row + 1)) && (0..8).contains(&(row as i8 - 1)) &&
+        (0..8).contains(&(col + 1)) && (0..8).contains(&(col as i8 - 1)) {
+        match piece.color {
+            Black => {
+                let right_capture = board.board[row + 1][col + 1];
+                let left_capture = board.board[row + 1][col - 1];
+                let forward_once = board.board[row + 1][col];
+                let forward_twice = board.board[row + 2][col];
 
-            if forward_twice.is_none() && piece.location.y == 6 {
-                possible_moves.push(Square { y: row -2, x: col});
+                if let Some(right_cap) = right_capture {
+                    if right_cap.color == White {
+                        possible_moves.push(right_cap.location);
+                    }
+                }
+                if let Some(left_cap) = left_capture {
+                    if left_cap.color == White {
+                        possible_moves.push(left_cap.location);
+                    }
+                }
+                if forward_once.is_none() {
+                    possible_moves.push(Square { y: row + 1, x: col });
+                }
+                if forward_twice.is_none() && piece.location.y == 1 {
+                    possible_moves.push(Square { y: row + 2, x: col });
+                }
+            }
+            White => {
+                let left_capture = board.board[row - 1][col - 1];
+                let right_capture = board.board[row - 1][col + 1];
+                let forward_once = board.board[row - 1][col];
+                let forward_twice = board.board[row - 2][col];
+                if let Some(left_cap) = left_capture {
+                    if left_cap.color == Black {
+                        possible_moves.push(left_cap.location);
+                    }
+                }
+                if let Some(right_cap) = right_capture {
+                    if right_cap.color == Black {
+                        possible_moves.push(right_cap.location);
+                    }
+                }
+                if forward_once.is_none() {
+                    possible_moves.push(Square { y: row - 1, x: col });
+                }
+
+                if forward_twice.is_none() && piece.location.y == 6 {
+                    possible_moves.push(Square { y: row - 2, x: col });
+                }
             }
         }
     }
@@ -147,6 +151,10 @@ pub fn knight_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     possible_moves
 }
 
+pub fn king_movements(chessboard: Chessboard, piece: Piece) -> Vec<Square> {
+    
+    vec![]
+}
 #[cfg(test)]
 mod tests {
     use crate::board::{Chessboard, Square};
