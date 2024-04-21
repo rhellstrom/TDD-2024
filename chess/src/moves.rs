@@ -84,6 +84,38 @@ pub fn rook_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
     possible_moves
 }
 
+pub fn knight_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
+    //All possible movement combinations for the knight
+    let knight_moves: [(i8, i8); 8] = [
+        (1, 2),
+        (1, -2),
+        (2, 1),
+        (2, -1),
+        (-1, 2),
+        (-1, -2),
+        (-2, -1),
+        (-2, 1),
+    ];
+    let mut possible_moves: Vec<Square> = vec![];
+    
+    for(r, c) in knight_moves{
+        let row = piece.location.y as i8 + r;
+        let col = piece.location.x as i8 + c;
+        
+        // If neither row nor col is out of bonds
+        let location = board.board[row as usize][col as usize];
+        if location.is_none() {
+            possible_moves.push(Square{ y: row as usize, x: col as usize});
+        }
+        if let Some(obstacle_piece) = location {
+            if obstacle_piece.color != piece.color {
+               possible_moves.push(obstacle_piece.location); 
+            }
+        }
+    }
+    possible_moves
+}
+
 #[cfg(test)]
 mod tests {
     use crate::board::{Chessboard, Square};
@@ -157,6 +189,11 @@ mod tests {
             "c5", "c3", "d6", "d2", "f6", "f2", "g5", "g3"
         ];
         test_moves("8/8/3P1P2/2P3P1/4n3/2P3P1/3P1P2/8", "e4", expected_moves);
+    }
+    
+    #[test]
+    fn moving_knight_within_bounds(){
+        test_moves("8/8/8/8/8/8/8/7N", "h1", vec!["g3", "f2"]);
     }
 
     #[test]
