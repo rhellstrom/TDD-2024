@@ -103,13 +103,15 @@ pub fn knight_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
         let col = piece.location.x as i8 + c;
         
         // If neither row nor col is out of bonds
-        let location = board.board[row as usize][col as usize];
-        if location.is_none() {
-            possible_moves.push(Square{ y: row as usize, x: col as usize});
-        }
-        if let Some(obstacle_piece) = location {
-            if obstacle_piece.color != piece.color {
-               possible_moves.push(obstacle_piece.location); 
+        if(0..8).contains(&(row as usize)) && (0..8).contains(&(col as usize)) {
+            let location = board.board[row as usize][col as usize];
+            if location.is_none() {
+                possible_moves.push(Square{ y: row as usize, x: col as usize});
+            }
+            if let Some(obstacle_piece) = location {
+                if obstacle_piece.color != piece.color {
+                    possible_moves.push(obstacle_piece.location);
+                }
             }
         }
     }
