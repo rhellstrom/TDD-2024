@@ -92,7 +92,7 @@ pub fn bishop_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
 
         while (0..8).contains(&(row as usize)) && (0..8).contains(&(col as usize)) {
             let location = board.board[row as usize][col as usize];
-            if location.is_none(){ 
+            if location.is_none(){
                 possible_moves.push(Square { y: row as usize, x: col as usize});
             } else if let Some(obstacle_piece) = location {
                 if obstacle_piece.color != piece.color {
@@ -103,6 +103,13 @@ pub fn bishop_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
             col += c;
         }
     }
+    possible_moves
+}
+
+pub fn queen_movements(board: Chessboard, piece: Piece) -> Vec<Square> {
+    let mut possible_moves: Vec<Square> = vec![];
+    possible_moves = rook_movements(board, piece);
+    possible_moves.append(&mut bishop_movements(board, piece));
     possible_moves
 }
 
@@ -246,7 +253,7 @@ mod tests {
     #[test]
     fn moving_queen_all_possible_directions_empty_board(){
         let expected_moves: Vec<&str> = vec![
-            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g3", "h7", "d3", "c2", "b1",
+            "a8", "b7", "c6", "d5", "f3", "g2", "h1", "f5", "g6", "h7", "d3", "c2", "b1",
             "a4", "b4", "c4", "d4", "f4", "g4", "h4", "e1", "e2", "e3", "e5", "e6", "e7", "e8"
         ];
         test_moves("8/8/8/8/4Q3/8/8/8", "e4", expected_moves);

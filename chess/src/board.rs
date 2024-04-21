@@ -37,6 +37,7 @@ impl Square {
 }
 
 #[allow(dead_code)]
+#[derive(Clone, Copy)]
 pub struct Chessboard {
     pub board: [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE],
 }
